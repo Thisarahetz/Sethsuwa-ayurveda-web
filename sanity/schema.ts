@@ -1,33 +1,8 @@
 import { type SchemaTypeDefinition } from 'sanity'
+import { product } from './schemas/product-schema'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
-    {
-      name: 'product',
-      title: 'Product',
-      type: 'document',
-      fields: [
-        {
-          name: 'name',
-          title: 'Product Name',
-          type: 'string',
-        },
-        {
-          name: 'description',
-          title: 'Product Description',
-          type: 'string',
-        },
-        {
-          name: 'price',
-          title: 'Product Price',
-          type: 'number',
-        },
-        {
-          name: 'image',
-          title: 'Product Image',
-          type: 'image',
-        },
-      ],
-    },
+    product
   ],
 }
