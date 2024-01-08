@@ -4,16 +4,29 @@ import { groq } from "next-sanity";
 import { SanityProduct } from "@/config/inventory";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { ProductFilters } from "@/components/product-filters";
-import { ProductGrid } from "@/components/product-grid";
-import { ProductSort } from "@/components/product-sort";
+import { ProductFilters } from "@/components/product/product-filters";
+import { ProductGrid } from "@/components/product/product-grid";
+import { ProductSort } from "@/components/product/product-sort";
 import { seedSanityData } from "@/lib/seed";
 
-interface Props {}
+interface Props {
+  searchParams: {
+    date?: string;
+    price?: string;
+  };
+}
 
-export default async function Page() {
+export default async function Page(props: Props) {
+  const { date, price } = props.searchParams;
+
+  const order = date
+    ? `| order(_createdAt ${date})`
+    : price
+    ? `| order(price ${price})`
+    : "";
+
   const product = await client.fetch<SanityProduct[]>(
-    groq`*[_type == "product"] {
+    groq`*[_type == "product"] ${order}  {
   _id,
   _createdAt,
   name,
