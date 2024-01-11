@@ -12,7 +12,7 @@ export default function SelectTraiffSkelton() {
       exit={"exit"}
       className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8"
     >
-      {[1, 2, 3].map((item, index) => {
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item, index) => {
         return (
           <div key={"skelton" + index}>
             <CommonSkelton width={225} height={240} />

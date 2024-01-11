@@ -11,15 +11,10 @@ import SelectTraiffSkelton from "../selectTraiffSkelton";
 
 type Props = {
   product: SanityProduct[];
+  isLoading: boolean;
 };
 
-export default function Wrapper({ product }: Props) {
-  const [isloading, setIsLoading] = React.useState(true);
-
-  useEffect(() => {
-    setIsLoading(true);
-  }, [product]);
-
+export default function Wrapper({ product, isLoading }: Props) {
   return (
     <>
       <AnimatePresence initial={false}>
@@ -60,7 +55,7 @@ export default function Wrapper({ product }: Props) {
                     <ProductFilters />
                   </div>
                   {/* Product grid */}
-                  {isloading && product.length === 0 ? (
+                  {isLoading ? (
                     <SelectTraiffSkelton />
                   ) : (
                     <ProductGrid products={product} />
