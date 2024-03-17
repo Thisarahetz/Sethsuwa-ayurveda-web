@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { CheckCheck, XCircle } from "lucide-react"
-import Stripe from "stripe"
+// import Stripe from "stripe"
 import { useShoppingCart } from "use-shopping-cart"
 
 interface Props {}
