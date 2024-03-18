@@ -1,71 +1,70 @@
+"use client";
 import { client } from "@/sanity/lib/client";
-import { groq } from "next-sanity";
-
+// import { groq } from "next-sanity";
 import { SanityProduct } from "@/config/inventory";
-import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { ProductFilters } from "@/components/product-filters";
-import { ProductGrid } from "@/components/product-grid";
-import { ProductSort } from "@/components/product-sort";
+import { ProductFilters } from "@/components/product/product-filters";
+import { ProductGrid } from "@/components/product/product-grid";
+import { ProductSort } from "@/components/product/product-sort";
 import { seedSanityData } from "@/lib/seed";
+import Wrapper from "@/components/product-wapper";
+import groq from "groq";
+import { useQuery } from "@tanstack/react-query";
 
-interface Props {}
+interface Props {
+  searchParams: {
+    date?: string;
+    price?: string;
+    color?: string;
+    size?: string;
+    category?: string;
+    search?: string;
+  };
+}
 
-export default async function Page() {
-  const product = await client.fetch<SanityProduct[]>(
-    groq`*[_type == "product"] {
-  _id,
-  _createdAt,
-  name,
-  sku,
-  images,
-  currency,
-  price,
-  description,
-  "slug": slug.current,
-    }`
-  );
+export default function Page(props: Props) {
+  const {
+    date = "desc",
+    price,
+    color,
+    category,
+    size,
+    search,
+  } = props.searchParams;
 
-  return (
-    <div>
-      <div className="px-4 pt-20 text-center">
-        <h1 className="text-4xl font-extrabold tracking-normal">
-          {siteConfig.name}
-        </h1>
-        <p className="mx-auto mt-4 max-w-3xl text-base">
-          {siteConfig.description}
-        </p>
-      </div>
-      <div>
-        <main className="mx-auto max-w-6xl px-6">
-          <div className="flex items-center justify-between border-b border-gray-200 pb-4 pt-24 dark:border-gray-800">
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
-              {product.length} result{product.length > 1 ? "s" : ""}
-            </h1>
-            {/* Product Sort */}
-            <ProductSort />
-          </div>
+  const order = date
+    ? `| order(_createdAt ${date})`
+    : price
+    ? `| order(price ${price})`
+    : "";
 
-          <section aria-labelledby="products-heading" className="pb-24 pt-6">
-            <h2 id="products-heading" className="sr-only">
-              Products
-            </h2>
-            <div
-              className={cn(
-                "grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-8 xl:grid-cols-4",
-                product.length === 0 ? "py-24" : "py-12"
-              )}
-            >
-              <div className="hidden lg:block">
-                {/* Product filters */}
-                <ProductFilters />
-              </div>
-              {/* Product grid */}
-              <ProductGrid products={product} />
-            </div>
-          </section>
-        </main>
-      </div>
-    </div>
-  );
+  const productFilter = `_type == "product"`;
+  const colorFilter = color ? `&& "${color}" in colors` : "";
+  const sizeFilter = size ? `&& "${size}" in sizes` : "";
+  const categoryFilter = category ? `&& "${category}" in categories` : "";
+  const searchFilter = search ? `&& name match "${search}"` : "";
+  const filter = `*[${productFilter}${colorFilter}${sizeFilter}${categoryFilter}${searchFilter}]`;
+
+  const query = `${filter} ${order}`;
+
+  const gquery = groq`${filter} ${order}  {
+    _id,
+    _createdAt,
+    name,
+    sku,
+    images,
+    currency,
+    price,
+    description,
+    "slug": slug.current,
+      }`;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["products", query],
+    queryFn: async () => {
+      return client.fetch<SanityProduct[]>(gquery);
+    },
+  });
+
+  return <Wrapper product={data ? data : []} isLoading={isLoading} />;
 }
