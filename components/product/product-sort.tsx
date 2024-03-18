@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { Filter } from "lucide-react"
+import { useRouter } from "next/navigation";
+import { Filter } from "lucide-react";
 
 import {
   Select,
@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -17,23 +17,30 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { ProductFilters } from "@/components/product-filters"
+} from "@/components/ui/sheet";
+import { ProductFilters } from "@/components/product/product-filters";
 
 const sortOptions = [
   { name: "Newest", value: "/?date=desc" },
   { name: "Price, low to high", value: "/?price=asc" },
   { name: "Price, high to low", value: "/?price=desc" },
-]
+];
 
 export function ProductSort() {
+  const router = useRouter();
   return (
     <div className="flex items-center">
-      <Select>
+      <Select onValueChange={(value) => router.replace(value)}>
         <SelectTrigger className="sm:w-[180px]">
           <SelectValue placeholder="Sort By" />
         </SelectTrigger>
-        <SelectContent>Sort Options</SelectContent>
+        <SelectContent>
+          {sortOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
       </Select>
       <Sheet>
         <SheetContent className="w-[300px]">
@@ -51,5 +58,5 @@ export function ProductSort() {
         </SheetTrigger>
       </Sheet>
     </div>
-  )
+  );
 }
